@@ -45,7 +45,7 @@ const SIGNUP = gql`
     ) {
       message
       userInfo {
-        _id
+        id
         firstName
         lastName
         email
@@ -108,7 +108,7 @@ const Signup = () => {
                   email: '',
                   password: ''
                 }}
-                onSubmit={values =>
+                onSubmit={(values) =>
                   signup({
                     variables: { ...values }
                   })

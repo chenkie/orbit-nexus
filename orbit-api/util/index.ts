@@ -1,8 +1,9 @@
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
+import * as jwtDecode from 'jwt-decode';
 
 interface User {
-  _id: string;
+  id: string;
   firstName: string;
   lastName: string;
   role: string;
@@ -17,7 +18,7 @@ export const createToken = (user: User) => {
   }
   return jwt.sign(
     {
-      sub: user._id,
+      sub: user.id,
       email: user.email,
       role: user.role,
       iss: 'api.orbit',
@@ -28,7 +29,9 @@ export const createToken = (user: User) => {
   );
 };
 
-export const hashPassword = (password: any) => {
+export const hashPassword = (
+  password: any
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     // Generate a salt at level 12 strength
     bcrypt.genSalt(12, (err, salt) => {
@@ -51,3 +54,6 @@ export const verifyPassword = (
 ) => {
   return bcrypt.compare(passwordAttempt, hashedPassword);
 };
+
+export const getDecodedToken = (token: string): any =>
+  jwtDecode(token);

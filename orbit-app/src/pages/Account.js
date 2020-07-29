@@ -10,7 +10,7 @@ const UPDATE_USER_ROLE = gql`
     updateUserRole(role: $role) {
       message
       user {
-        _id
+        id
         firstName
         lastName
         email
@@ -39,7 +39,7 @@ const Account = () => {
           <div className="mt-2 flex">
             <select
               defaultValue={auth.authState.userInfo.role}
-              onChange={e =>
+              onChange={(e) =>
                 updateUserRole({
                   variables: { role: e.target.value }
                 })

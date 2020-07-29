@@ -47,7 +47,7 @@ const InventoryItem = ({ item, onDelete }) => {
                   'Are you sure you want to delete this item?'
                 )
               ) {
-                onDelete({ variables: { id: item._id } });
+                onDelete({ variables: { id: item.id } });
               }
             }}
           />
@@ -69,7 +69,7 @@ const NewInventoryItem = ({ onSubmit }) => {
 const INVENTORY_ITEMS = gql`
   {
     inventoryItems {
-      _id
+      id
       name
       itemNumber
       unitPrice
@@ -84,34 +84,30 @@ const ADD_INVENTORY_ITEM = gql`
     $itemNumber: String!
     $unitPrice: Float!
   ) {
-    addInventoryItem(
-      name: $name
-      itemNumber: $itemNumber
-      unitPrice: $unitPrice
-    ) {
-      message
-      inventoryItem {
-        _id
-        name
-        itemNumber
-        unitPrice
-        image
+    createOneInventoryItem(
+      data: {
+        name: $name
+        itemNumber: $itemNumber
+        unitPrice: $unitPrice
       }
+    ) {
+      id
+      name
+      itemNumber
+      unitPrice
+      image
     }
   }
 `;
 
 const DELETE_INVENTORY_ITEM = gql`
-  mutation DeleteInventoryItem($id: ID!) {
-    deleteInventoryItem(id: $id) {
-      message
-      inventoryItem {
-        _id
-        name
-        itemNumber
-        unitPrice
-        image
-      }
+  mutation DeleteInventoryItem($id: String!) {
+    deleteOneInventoryItem(where: { id: $id }) {
+      id
+      name
+      itemNumber
+      unitPrice
+      image
     }
   }
 `;
@@ -127,15 +123,17 @@ const Inventory = () => {
     addInventoryItem,
     { data: addItemData }
   ] = useMutation(ADD_INVENTORY_ITEM, {
-    update(cache, { data: { addInventoryItem } }) {
-      const { inventoryItem } = addInventoryItem;
+    update(cache, { data: { createOneInventoryItem } }) {
       const { inventoryItems } = cache.readQuery({
         query: INVENTORY_ITEMS
       });
       cache.writeQuery({
         query: INVENTORY_ITEMS,
         data: {
-          inventoryItems: [...inventoryItems, inventoryItem]
+          inventoryItems: [
+            ...inventoryItems,
+            createOneInventoryItem
+          ]
         }
       });
     }
@@ -144,8 +142,7 @@ const Inventory = () => {
   const [deleteInventoryItem] = useMutation(
     DELETE_INVENTORY_ITEM,
     {
-      update(cache, { data: { deleteInventoryItem } }) {
-        const { inventoryItem } = deleteInventoryItem;
+      update(cache, { data: { deleteOneInventoryItem } }) {
         const { inventoryItems } = cache.readQuery({
           query: INVENTORY_ITEMS
         });
@@ -153,7 +150,8 @@ const Inventory = () => {
           query: INVENTORY_ITEMS,
           data: {
             inventoryItems: inventoryItems.filter(
-              (item) => item._id !== inventoryItem._id
+              (item) =>
+                item.id !== deleteOneInventoryItem.id
             )
           }
         });
@@ -167,9 +165,7 @@ const Inventory = () => {
       {queryError && <p>{JSON.stringify(queryError)}</p>}
       <PageTitle title="Inventory" />
       {addItemData && (
-        <FormSuccess
-          text={addItemData.addInventoryItem.message}
-        />
+        <FormSuccess text={`Inventory Item Added`} />
       )}
       {queryError && <FormError text={queryError} />}
       <div className="mb-4">
@@ -177,7 +173,7 @@ const Inventory = () => {
       </div>
       {data && data.inventoryItems.length
         ? data.inventoryItems.map((item) => (
-            <InventoryItemContainer key={item._id}>
+            <InventoryItemContainer key={item.id}>
               <InventoryItem
                 item={item}
                 onDelete={deleteInventoryItem}

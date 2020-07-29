@@ -1,1 +1,1 @@
-{ schemaPath: ../orbit.graphql }
+{ schemaPath: ../orbit-api-nexus/api.graphql }

@@ -11,7 +11,7 @@ import FormSuccess from './../components/FormSuccess';
 const USER = gql`
   {
     user {
-      _id
+      id
       firstName
       lastName
       role
@@ -25,7 +25,7 @@ const UPDATE_USER_BIO = gql`
   mutation UpdateUserBio($bio: String!) {
     updateUserBio(bio: $bio) {
       message
-      userBio {
+      user {
         bio
       }
     }
@@ -58,7 +58,7 @@ const Settings = () => {
             initialValues={{
               bio: data && data.user ? data.user.bio : ''
             }}
-            onSubmit={values =>
+            onSubmit={(values) =>
               updateUserBio({ variables: { ...values } })
             }
             enableReinitialize={true}

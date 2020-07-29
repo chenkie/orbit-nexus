@@ -1,0 +1,38 @@
+// This Prisma Schema file was created by Nexus
+// If you're new to Nexus or Prisma you may find these docs useful:
+//
+//   - Prisma plugin docs http://nxs.li/nexus-plugin-prisma
+//   - Prisma Schema docs https://pris.ly/d/prisma-schema
+
+// This "Example" model has been generated for you by Nexus.
+// Nexus does this when you do not have any models defined.
+// For more detail and examples of working with your Prisma
+// Schema, refer to its complete docs at https://pris.ly/d/prisma-schema.
+
+datasource db {
+  provider = "postgresql"
+  url = "***"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String @id @default(uuid())
+  firstName String
+  lastName  String
+  email String @unique
+  role      String
+  bio      String
+  avatar    String
+  password  String
+}
+
+model InventoryItem {
+  id         String @id @default(uuid())
+  name       String
+  itemNumber String
+  unitPrice  Float
+  image      String
+}

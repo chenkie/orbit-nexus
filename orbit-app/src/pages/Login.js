@@ -29,7 +29,7 @@ const LOGIN = gql`
     login(email: $email, password: $password) {
       message
       userInfo {
-        _id
+        id
         firstName
         lastName
         email

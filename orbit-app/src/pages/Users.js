@@ -14,8 +14,9 @@ const UserDetailLabel = ({ text }) => (
 const UserDetail = ({ user }) => (
   <Card>
     <div className="flex">
-      <div className="w-24">
+      <div className="w-24 mr-4">
         <img
+          className="rounded-full"
           src={user.avatar || defaultAvatar}
           alt="avatar"
         />
@@ -46,7 +47,7 @@ const UserDetail = ({ user }) => (
 const USERS_DATA = gql`
   {
     users {
-      _id
+      id
       firstName
       lastName
       avatar
@@ -65,8 +66,8 @@ const Users = () => {
         {loading && <p>Loading...</p>}
         {error && <p>Something went wrong</p>}
         {data &&
-          data.users.map(user => (
-            <div className="m-2" key={user._id}>
+          data.users.map((user) => (
+            <div className="m-2" key={user.id}>
               <UserDetail user={user} />
             </div>
           ))}
