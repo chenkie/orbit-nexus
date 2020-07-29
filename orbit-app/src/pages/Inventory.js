@@ -84,12 +84,10 @@ const ADD_INVENTORY_ITEM = gql`
     $itemNumber: String!
     $unitPrice: Float!
   ) {
-    createOneInventoryItem(
-      data: {
-        name: $name
-        itemNumber: $itemNumber
-        unitPrice: $unitPrice
-      }
+    createInventoryItem(
+      name: $name
+      itemNumber: $itemNumber
+      unitPrice: $unitPrice
     ) {
       id
       name
@@ -102,7 +100,7 @@ const ADD_INVENTORY_ITEM = gql`
 
 const DELETE_INVENTORY_ITEM = gql`
   mutation DeleteInventoryItem($id: String!) {
-    deleteOneInventoryItem(where: { id: $id }) {
+    deleteInventoryItem(id: $id) {
       id
       name
       itemNumber
@@ -123,7 +121,7 @@ const Inventory = () => {
     addInventoryItem,
     { data: addItemData }
   ] = useMutation(ADD_INVENTORY_ITEM, {
-    update(cache, { data: { createOneInventoryItem } }) {
+    update(cache, { data: { createInventoryItem } }) {
       const { inventoryItems } = cache.readQuery({
         query: INVENTORY_ITEMS
       });
@@ -132,7 +130,7 @@ const Inventory = () => {
         data: {
           inventoryItems: [
             ...inventoryItems,
-            createOneInventoryItem
+            createInventoryItem
           ]
         }
       });
@@ -142,7 +140,7 @@ const Inventory = () => {
   const [deleteInventoryItem] = useMutation(
     DELETE_INVENTORY_ITEM,
     {
-      update(cache, { data: { deleteOneInventoryItem } }) {
+      update(cache, { data: { deleteInventoryItem } }) {
         const { inventoryItems } = cache.readQuery({
           query: INVENTORY_ITEMS
         });
@@ -150,8 +148,7 @@ const Inventory = () => {
           query: INVENTORY_ITEMS,
           data: {
             inventoryItems: inventoryItems.filter(
-              (item) =>
-                item.id !== deleteOneInventoryItem.id
+              (item) => item.id !== deleteInventoryItem.id
             )
           }
         });
